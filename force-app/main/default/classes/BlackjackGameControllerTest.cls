@@ -100,4 +100,20 @@ private class BlackjackGameControllerTest {
         Player__c player = PlayerService.getPlayer(playerId);
         Assert.areEqual(1000 + (Decimal) settled.get('netChange'), player.Fund__c);
     }
+
+    @IsTest
+    static void testGetOpenRoundIsNullWithoutOpenRound() {
+        Id playerId = createPlayer(1000);
+        Assert.isNull(BlackjackGameController.getOpenRound(playerId));
+    }
+
+    @IsTest
+    static void testGetOpenRoundReturnsTheOpenRound() {
+        Id playerId = createPlayer(1000);
+        Map<String, Object> started = openRound(playerId, 100);
+
+        Map<String, Object> found = BlackjackGameController.getOpenRound(playerId);
+
+        Assert.areEqual(started.get('roundId'), found.get('roundId'));
+    }
 }

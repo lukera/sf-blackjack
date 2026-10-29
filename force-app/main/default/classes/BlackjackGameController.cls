@@ -28,12 +28,18 @@ public with sharing class BlackjackGameController {
     }
 
     @AuraEnabled
-    public static Map<String, Object> startRound(Id playerId, Decimal bet) {
+    public static Map<String, Object> getOpenRound(Id playerId) {
         List<Blackjack_Round__c> open = [
             SELECT Id FROM Blackjack_Round__c WHERE Player__c = :playerId AND Status__c = 'OPEN' LIMIT 1
         ];
-        if (!open.isEmpty()) {
-            return getRound(open[0].Id);
+        return open.isEmpty() ? null : getRound(open[0].Id);
+    }
+
+    @AuraEnabled
+    public static Map<String, Object> startRound(Id playerId, Decimal bet) {
+        Map<String, Object> existing = getOpenRound(playerId);
+        if (existing != null) {
+            return existing;
         }
 
         Decimal fund = orZero(PlayerService.getPlayer(playerId).Fund__c);
@@ -75,7 +81,7 @@ public with sharing class BlackjackGameController {
 
     @AuraEnabled
     public static Map<String, Object> playerAction(Id roundId, String action, Integer handIndex) {
-        Blackjack_Round__c round = getOpenRound(roundId);
+        Blackjack_Round__c round = getOpenRoundRecord(roundId);
         RoundState st = readState(round);
         if (!allowedActions(st).contains(action)) {
             throw new AuraHandledException(action + ' is not allowed in the current state.');
@@ -262,7 +268,7 @@ public with sharing class BlackjackGameController {
         return found[0];
     }
 
-    private static Blackjack_Round__c getOpenRound(Id roundId) {
+    private static Blackjack_Round__c getOpenRoundRecord(Id roundId) {
         Blackjack_Round__c round = getRoundRecord(roundId);
         if (round.Status__c != 'OPEN') {
             throw new AuraHandledException('This round is already settled.');
