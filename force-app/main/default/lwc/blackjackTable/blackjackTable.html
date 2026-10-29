@@ -1,0 +1,99 @@
+<template>
+  <lightning-card title="Blackjack" icon-name="standard:scenario">
+    <div class="slds-p-horizontal_medium">
+      <div class="controls">
+        <lightning-combobox
+          name="player"
+          label="Player"
+          placeholder="Select a player"
+          options={playerOptions}
+          value={selectedPlayerId}
+          onchange={handlePlayerChange}
+        >
+        </lightning-combobox>
+        <lightning-input
+          type="number"
+          label="Bet"
+          value={bet}
+          min="1"
+          disabled={roundOpen}
+          onchange={handleBetChange}
+        >
+        </lightning-input>
+        <lightning-button
+          variant="brand"
+          label="Deal"
+          data-id="deal"
+          disabled={dealDisabled}
+          onclick={handleDeal}
+        >
+        </lightning-button>
+      </div>
+
+      <template if:true={errorMessage}>
+        <p class="error" data-id="error">{errorMessage}</p>
+      </template>
+
+      <template if:true={round}>
+        <section class="dealer">
+          <h3>
+            Dealer
+            <template if:true={round.dealerTotal}
+              >({round.dealerTotal})</template
+            >
+          </h3>
+          <div class="cards">
+            <template for:each={dealerCards} for:item="card">
+              <template if:true={card.hidden}>
+                <div key={card.key} class="card-back"></div>
+              </template>
+              <template if:false={card.hidden}>
+                <img
+                  key={card.key}
+                  class="card"
+                  src={card.src}
+                  alt="dealer card"
+                />
+              </template>
+            </template>
+          </div>
+        </section>
+
+        <section class="player-hands">
+          <template for:each={handViews} for:item="hand">
+            <div key={hand.key} class="hand">
+              <h3>Hand ({hand.total}) - Bet {hand.bet} - {hand.status}</h3>
+              <div class="cards">
+                <template for:each={hand.cards} for:item="card">
+                  <img
+                    key={card.key}
+                    class="card"
+                    src={card.src}
+                    alt="player card"
+                  />
+                </template>
+              </div>
+            </div>
+          </template>
+        </section>
+
+        <div class="actions">
+          <template for:each={actionButtons} for:item="button">
+            <lightning-button
+              key={button.action}
+              label={button.label}
+              data-action={button.action}
+              disabled={button.disabled}
+              onclick={handleAction}
+            >
+            </lightning-button>
+          </template>
+        </div>
+
+        <template if:true={roundSettled}>
+          <p class="result" data-id="result">{resultText}</p>
+        </template>
+      </template>
+    </div>
+  </lightning-card>
+</template>
