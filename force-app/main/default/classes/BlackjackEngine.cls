@@ -47,21 +47,26 @@ public class BlackjackEngine {
         }
 
         private void reshuffle() {
-            cards = new List<Card>();
-            for (Integer d = 0; d < decks; d++) {
-                for (String suit : SUITS) {
-                    for (String rank : RANKS) {
-                        cards.add(new Card(rank, suit));
-                    }
+            cards = newShoe(decks);
+        }
+    }
+
+    public static List<Card> newShoe(Integer decks) {
+        List<Card> cards = new List<Card>();
+        for (Integer d = 0; d < decks; d++) {
+            for (String suit : SUITS) {
+                for (String rank : RANKS) {
+                    cards.add(new Card(rank, suit));
                 }
             }
-            for (Integer i = cards.size() - 1; i > 0; i--) {
-                Integer j = (Integer) Math.floor(Math.random() * (i + 1));
-                Card swap = cards[i];
-                cards[i] = cards[j];
-                cards[j] = swap;
-            }
         }
+        for (Integer i = cards.size() - 1; i > 0; i--) {
+            Integer j = (Integer) Math.floor(Math.random() * (i + 1));
+            Card swap = cards[i];
+            cards[i] = cards[j];
+            cards[j] = swap;
+        }
+        return cards;
     }
 
     public static Integer bestTotal(List<Card> cards) {

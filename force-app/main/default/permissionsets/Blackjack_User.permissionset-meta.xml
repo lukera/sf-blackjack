@@ -12,6 +12,15 @@
         <object>Player__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Blackjack_Round__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Player__c.Fund__c</field>
@@ -30,6 +39,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Player__c.Highest_Earn__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Blackjack_Round__c.State_Json__c</field>
         <readable>true</readable>
     </fieldPermissions>
 </PermissionSet>
