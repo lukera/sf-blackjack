@@ -1,7 +1,7 @@
 # Blackjack on Salesforce: Design
 
 Date: 2026-10-29
-Status: Draft, pending review
+Status: Approved
 
 ## 1. Goal
 
@@ -30,10 +30,8 @@ Build a Blackjack game inside Salesforce. Players are stored as `Player__c` reco
 | Name | `Name` | Text | Player name. Required. |
 | Fund | `Fund__c` | Currency | Current balance. Default 1000. |
 | Highest Bet | `Highest_Bet__c` | Currency | Largest single bet placed. |
-| Highest Hand | `Highest_Hand__c` | Number | Highest total reached in a single round (2 to 21). |
+| Highest Hand | `Highest_Hand__c` | Number | Best value of a winning hand: the highest total (2 to 21) the player won a round with. Pushes and losses don't count. |
 | Highest Earn | `Highest_Earn__c` | Currency | Largest net profit: current fund minus the starting fund of 1000. |
-
-**Assumption to confirm:** "Highest Hand" is read as the best total in one round. The earlier definition (largest single-round gain) is dropped.
 
 Highest Earn is updated when the fund goes above the previous high. Fund changes from a round are the only source of updates.
 
@@ -66,7 +64,7 @@ Highest Earn is updated when the fund goes above the previous high. Fund changes
 
 The state (shoe, dealer hand, player hands, bets, insurance) is held in memory on the server, keyed by a `gameId` that the LWC sends back on each action.
 
-Trade-off: a Salesforce org can drop the in-memory state between calls. In v1 I'll keep the state in a `Blackjack_Round__c` record instead of memory, so a refresh or a new call can continue the round. **This is a change from the plain in-memory option and needs your approval.** The alternative is the in-memory option with a warning that a refresh ends the round.
+The state is stored in a `Blackjack_Round__c` record, so a page refresh or a new call can continue the round. Approved.
 
 ## 7. LWC
 
@@ -83,7 +81,7 @@ Card images are shown with `<img src={cardUrl}>` built from the rank and suit.
 ## 8. Salesforce metadata
 
 - `Player__c` object, fields as in section 3, plus a default list view and a tab.
-- `Blackjack_Round__c` object (only if section 6 is approved): stores the state as JSON, plus the player lookup and status.
+- `Blackjack_Round__c` object: stores the round state as JSON, plus the player lookup and status.
 - Lightning tab "Blackjack" that displays `blackjackTable`.
 - Custom app "Blackjack" that includes the Blackjack tab and the Players tab.
 - Static resource `Cards`.
@@ -103,9 +101,10 @@ Card images are shown with `<img src={cardUrl}>` built from the rank and suit.
 - **Apex tests** (PlayerService and controller): bet larger than the fund is rejected; stats update correctly after a win, a loss and a push; Highest Earn only changes when the fund goes above its previous high.
 - **Jest tests** (`blackjackTable`): buttons enabled and disabled by state, the card image URL built from rank and suit.
 
-## 11. Open decisions
+## 11. Decisions
 
-1. Confirm "Highest Hand" means the best total in one round (section 3).
-2. Confirm the state approach (section 6): `Blackjack_Round__c` record (recommended) or in-memory.
-3. Shoe size: 6 decks, as proposed.
+All open points are resolved:
+1. Highest Hand is the best value of a winning hand (section 3).
+2. Round state is stored in a `Blackjack_Round__c` record (section 6).
+3. Shoe size: 6 decks.
 4. Dealer stands on soft 17.
