@@ -84,4 +84,59 @@ public class BlackjackEngine {
     public static Boolean isBlackjack(List<Card> cards) {
         return cards.size() == 2 && bestTotal(cards) == 21;
     }
+
+    public static Boolean dealerMustHit(List<Card> cards) {
+        return bestTotal(cards) <= 16;
+    }
+
+    public static Decimal payout(Decimal bet, String outcome) {
+        if (outcome == 'BLACKJACK') {
+            return bet * 1.5;
+        }
+        if (outcome == 'WIN') {
+            return bet;
+        }
+        if (outcome == 'LOSE') {
+            return -bet;
+        }
+        return 0;
+    }
+
+    public static String compare(List<Card> player, List<Card> dealer) {
+        Boolean playerBlackjack = isBlackjack(player);
+        Boolean dealerBlackjack = isBlackjack(dealer);
+        if (playerBlackjack && dealerBlackjack) {
+            return 'PUSH';
+        }
+        if (playerBlackjack) {
+            return 'BLACKJACK';
+        }
+        if (dealerBlackjack) {
+            return 'LOSE';
+        }
+        Integer playerTotal = bestTotal(player);
+        Integer dealerTotal = bestTotal(dealer);
+        if (playerTotal > 21) {
+            return 'LOSE';
+        }
+        if (dealerTotal > 21 || playerTotal > dealerTotal) {
+            return 'WIN';
+        }
+        if (playerTotal < dealerTotal) {
+            return 'LOSE';
+        }
+        return 'PUSH';
+    }
+
+    public static Decimal insurancePayout(Decimal insuranceBet, Boolean dealerBlackjack) {
+        return dealerBlackjack ? insuranceBet * 2 : -insuranceBet;
+    }
+
+    public static Boolean canSplit(List<Card> cards) {
+        return cards.size() == 2 && cards[0].rank == cards[1].rank;
+    }
+
+    public static Boolean canDouble(List<Card> cards) {
+        return cards.size() == 2;
+    }
 }

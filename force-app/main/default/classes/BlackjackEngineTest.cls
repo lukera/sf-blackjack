@@ -38,4 +38,53 @@ private class BlackjackEngineTest {
         Assert.isNotNull(shoe.draw());
         Assert.areEqual(311, shoe.remaining());
     }
+
+    @IsTest
+    static void testDealerStandsOnSoftSeventeen() {
+        Assert.isFalse(BlackjackEngine.dealerMustHit(new List<BlackjackEngine.Card>{ card('Ace'), card('6') }));
+    }
+
+    @IsTest
+    static void testDealerHitsOnSixteen() {
+        Assert.isTrue(BlackjackEngine.dealerMustHit(new List<BlackjackEngine.Card>{ card('10'), card('6') }));
+    }
+
+    @IsTest
+    static void testPayoutBlackjackIsThreeToTwo() {
+        Assert.areEqual(150.0, BlackjackEngine.payout(100, 'BLACKJACK'));
+    }
+
+    @IsTest
+    static void testPayoutPushReturnsZero() {
+        Assert.areEqual(0.0, BlackjackEngine.payout(100, 'PUSH'));
+    }
+
+    @IsTest
+    static void testCompareBlackjackBeatsTwentyOne() {
+        String result = BlackjackEngine.compare(
+            new List<BlackjackEngine.Card>{ card('Ace'), card('King') },
+            new List<BlackjackEngine.Card>{ card('10'), card('5'), card('6') }
+        );
+        Assert.areEqual('BLACKJACK', result);
+    }
+
+    @IsTest
+    static void testCompareBothBlackjackIsPush() {
+        String result = BlackjackEngine.compare(
+            new List<BlackjackEngine.Card>{ card('Ace'), card('King') },
+            new List<BlackjackEngine.Card>{ card('Ace'), card('Queen') }
+        );
+        Assert.areEqual('PUSH', result);
+    }
+
+    @IsTest
+    static void testInsuranceLosesWithoutDealerBlackjack() {
+        Assert.areEqual(-50.0, BlackjackEngine.insurancePayout(50, false));
+    }
+
+    @IsTest
+    static void testCanSplitOnlySamePair() {
+        Assert.isTrue(BlackjackEngine.canSplit(new List<BlackjackEngine.Card>{ card('8'), card('8') }));
+        Assert.isFalse(BlackjackEngine.canSplit(new List<BlackjackEngine.Card>{ card('8'), card('King') }));
+    }
 }
